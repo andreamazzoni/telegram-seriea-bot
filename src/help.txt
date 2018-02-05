@@ -1,0 +1,13 @@
+*Command details:*
+/ranking
+show actual ranking and some stats
+/ranking <number>
+show ranking at specified matchday
+/matchday
+show information about actual matchday.
+/matchday <number>
+show information about specified matchday
+/players <team name>
+show all team players
+/player <team name> <player number>
+show player's details
