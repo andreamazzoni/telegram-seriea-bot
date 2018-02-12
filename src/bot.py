@@ -13,7 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - '
 
 logger = logging.getLogger(__name__)
 
-fd = FootballData(os.environ['FOOTBALL_DATA_HOSTNAME'])
+fd = FootballData(os.environ['PROTOCOL'] + '://' + os.environ['FOOTBALL_DATA_HOSTNAME'])
 
 
 def RepresentsInt(s):

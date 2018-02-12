@@ -9,7 +9,8 @@ run-test:
 	docker run -it --rm \
 	--env "BOT_TOKEN=<token>" \
 	--env "LOG_LEVEL=DEBUG" \
-	--env "FOOTBALL_DATA_HOSTNAME=https://api.football-data.org" \
+	--env "FOOTBALL_DATA_HOSTNAME=api.football-data.org" \
+	--env "PROTOCOL=http" \
 	--name telegram-seriea-bot \
 	telegram-seriea-bot
 
@@ -23,6 +24,7 @@ deploy:
 	docker run -d \
 	--env "BOT_TOKEN=<token>" \
 	--env "LOG_LEVEL=WARNING" \
-	--env "FOOTBALL_DATA_HOSTNAME=https://api.football-data.org" \
+	--env "FOOTBALL_DATA_HOSTNAME=api.football-data.org" \
+	--env "PROTOCOL=http" \
 	--name telegram-seriea-bot \
 	telegram-seriea-bot
