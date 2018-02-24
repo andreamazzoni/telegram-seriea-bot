@@ -1,7 +1,8 @@
 import logging
 import os
 import sys
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
+from telegram import InlineQueryResultArticle, InputTextMessageContent
 from threading import Thread
 from footballdata import FootballData
 
@@ -131,6 +132,31 @@ def info(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text=ret)
 
 
+def inline(bot, update):
+    results = list()
+    results.append(
+        InlineQueryResultArticle(
+            id='matchday',
+            title='Matchday',
+            input_message_content=InputTextMessageContent(
+                message_text=fd.matchday(0),
+                parse_mode='Markdown'
+            )
+        )
+    )
+    results.append(
+        InlineQueryResultArticle(
+            id='ranking',
+            title='Ranking',
+            input_message_content=InputTextMessageContent(
+                message_text=fd.ranking(0),
+                parse_mode='Markdown'
+            )
+        )
+    )
+    bot.answer_inline_query(update.inline_query.id, results)
+
+
 def main():
 
     def stop_and_restart():
@@ -169,6 +195,10 @@ def main():
 
     # log all errors
     dp.add_error_handler(error)
+
+    # inline
+    inline_handler = InlineQueryHandler(inline)
+    dp.add_handler(inline_handler)
 
     # Start the Bot
 
