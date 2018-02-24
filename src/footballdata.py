@@ -1,6 +1,6 @@
 import datetime
-from Cache import Cache
-from Team import Team
+from cache import Cache
+from team import Team
 
 
 class FootballData:
@@ -70,14 +70,18 @@ class FootballData:
             date.strftime('%d/%m/%Y') + '_\n'
         for i in range(0, count):
 
-            homeTeam = self.get_teamname(fixtures[i]['homeTeamName'])
-            awayTeam = self.get_teamname(fixtures[i]['awayTeamName'])
+            hometeam = self.get_teamname(fixtures[i]['homeTeamName'])
+            awayteam = self.get_teamname(fixtures[i]['awayTeamName'])
 
-            ret += '`' + homeTeam + ' - ' + awayTeam + ' '
+            ret += '`' + hometeam + ' - ' + awayteam + ' '
 
-            if fixtures[i]['status'] in ('IN_PLAY', 'FINISHED'):
+            if fixtures[i]['status'] in ('FINISHED'):
                 ret += str(fixtures[i]['result']['goalsHomeTeam']) + '-' + \
                     str(fixtures[i]['result']['goalsAwayTeam']) + '`\n'
+
+            if fixtures[i]['status'] in ('IN_PLAY'):
+                ret += str(fixtures[i]['result']['goalsHomeTeam']) + '-' + \
+                       str(fixtures[i]['result']['goalsAwayTeam']) + '`  Live!\n'
 
             if fixtures[i]['status'] in ('TIMED', 'SCHEDULED'):
                 date = datetime.datetime.strptime(

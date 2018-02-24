@@ -1,9 +1,9 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from FootballData import FootballData
 import logging
 import os
 import sys
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from threading import Thread
+from footballdata import FootballData
 
 bot_token = os.environ['BOT_TOKEN']
 
