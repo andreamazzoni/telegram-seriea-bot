@@ -73,9 +73,9 @@ class FootballData:
             homeTeam = self.get_teamname(fixtures[i]['homeTeamName'])
             awayTeam = self.get_teamname(fixtures[i]['awayTeamName'])
 
+            ret += '`' + homeTeam + ' - ' + awayTeam + ' '
+
             if fixtures[i]['status'] in ('IN_PLAY', 'FINISHED'):
-                ret += '`' + homeTeam.ljust(3) + \
-                    ' - ' + awayTeam.ljust(3) + ' '
                 ret += str(fixtures[i]['result']['goalsHomeTeam']) + '-' + \
                     str(fixtures[i]['result']['goalsAwayTeam']) + '`\n'
 
@@ -85,13 +85,13 @@ class FootballData:
                 date += datetime.timedelta(hours=1)
                 stringdate = date.strftime(
                     '%a') + ' ' + date.strftime('%H:%M') + ' '
-                ret += '`' + stringdate + homeTeam + ' - ' + awayTeam + '`\n'
+                ret += stringdate + '`\n'
 
             if fixtures[i]['status'] in ('POSTPONED'):
-                ret += '`' + homeTeam + ' - ' + awayTeam + ' Postponed`\n'
+                ret += ' Postponed`\n'
 
             if fixtures[i]['status'] in ('CANCELED'):
-                ret += '`' + homeTeam + ' - ' + awayTeam + ' Canceled`\n'
+                ret += ' Canceled`\n'
 
         return ret
 
