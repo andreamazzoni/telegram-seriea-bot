@@ -4,11 +4,14 @@ FROM python:latest
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata
 
-#install libraries
-RUN pip install pipenv
-RUN pip install python-telegram-bot
+SHELL ["/bin/bash", "-c"]
 
-#copy bot files
-COPY ["src/*","src/"]
+#copy source files and dependencies
+COPY . /telegram-seriea-bot/
+WORKDIR /telegram-seriea-bot
+RUN pip install virtualenv && \
+    virtualenv env && \
+    source env/bin/activate && \
+    pip install -r requirements.txt
 
-CMD ["python","src/bot.py"]
+ENTRYPOINT ["/telegram-seriea-bot/entrypoint.sh"]

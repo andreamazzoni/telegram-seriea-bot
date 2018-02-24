@@ -1,4 +1,5 @@
-
+env/
+.idea/
 *.sublime-workspace
 
 __pycache__/
