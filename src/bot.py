@@ -50,21 +50,6 @@ def ranking(bot, update, args):
                      parse_mode='Markdown', text=ret)
 
 
-def results(bot, update, args):
-    if len(args) == 0:
-        ret = fd.results(0)
-    elif len(args) > 1:
-        ret = 'Too much arguments'
-    elif not RepresentsInt(args[0]):
-        ret = 'Argument must be an integer'
-    elif int(args[0]) < 1:
-        ret = 'Argument must be at least 1'
-    else:
-        ret = fd.results(args[0])
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
-
-
 def players(bot, update, args):
     if len(args) == 0:
         ret = 'Syntax: /players <team name>'
@@ -177,7 +162,6 @@ def main():
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("ranking", ranking, pass_args=True))
-    dp.add_handler(CommandHandler("results", results, pass_args=True))
     dp.add_handler(CommandHandler("players", players, pass_args=True))
     dp.add_handler(CommandHandler("player", player, pass_args=True))
     dp.add_handler(CommandHandler("matchday", matchday, pass_args=True))
