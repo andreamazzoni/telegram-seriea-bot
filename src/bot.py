@@ -4,7 +4,7 @@ import sys
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from threading import Thread
-from footballdata import FootballData
+from .footballdata import FootballData
 
 bot_token = os.environ['BOT_TOKEN']
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 fd = FootballData(os.environ['PROTOCOL'] + '://' + os.environ['FOOTBALL_DATA_HOSTNAME'])
 
 
-def RepresentsInt(s):
+def representint(s):
     try:
         int(s)
         return True
@@ -26,7 +26,7 @@ def RepresentsInt(s):
 
 
 def error(bot, update, error):
-    logger.warn('Update "%s" caused error "%s"' % (update, error))
+    logger.warning('Update "%s" caused error "%s"' % (update, error))
 
 
 def echo(bot, update):
@@ -38,7 +38,7 @@ def ranking(bot, update, args):
         ret = fd.ranking(0)
     elif len(args) > 1:
         ret = 'Too much arguments'
-    elif not RepresentsInt(args[0]):
+    elif not representint(args[0]):
         ret = 'Argument must be an integer'
     elif int(args[0]) < 1:
         ret = 'Argument must be at least 1'
@@ -77,7 +77,7 @@ def matchday(bot, update, args):
         ret = fd.matchday(0)
     elif len(args) > 1:
         ret = 'Too much arguments'
-    elif not RepresentsInt(args[0]):
+    elif not representint(args[0]):
         ret = 'Argument must be an integer'
     elif int(args[0]) < 1:
         ret = 'Argument must be at least 1'
@@ -118,8 +118,8 @@ def info(bot, update):
 
 
 def inline(bot, update):
-    results = list()
-    results.append(
+    query_results = list()
+    query_results.append(
         InlineQueryResultArticle(
             id='matchday',
             title='Matchday',
@@ -129,7 +129,7 @@ def inline(bot, update):
             )
         )
     )
-    results.append(
+    query_results.append(
         InlineQueryResultArticle(
             id='ranking',
             title='Ranking',
@@ -139,7 +139,7 @@ def inline(bot, update):
             )
         )
     )
-    bot.answer_inline_query(update.inline_query.id, results)
+    bot.answer_inline_query(update.inline_query.id, query_results)
 
 
 def main():
