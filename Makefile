@@ -15,7 +15,7 @@ run-test:
 	telegram-seriea-bot
 
 
-deploy:
+docker-deploy:
 	#serieabot
 	-docker stop telegram-seriea-bot
 	-docker rm telegram-seriea-bot
@@ -27,4 +27,4 @@ deploy:
 	--env "FOOTBALL_DATA_HOSTNAME=api.football-data.org" \
 	--env "PROTOCOL=http" \
 	--name telegram-seriea-bot \
-	telegram-seriea-bot
+	telegram-seriea-bot python src/bot.py
