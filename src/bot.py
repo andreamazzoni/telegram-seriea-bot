@@ -4,7 +4,7 @@ import sys
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from threading import Thread
-from .footballdata import FootballData
+from footballdata import FootballData
 
 bot_token = os.environ['BOT_TOKEN']
 
