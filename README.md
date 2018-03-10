@@ -6,7 +6,7 @@ Powered by https://github.com/python-telegram-bot/python-telegram-bot
 
 Contacts: andreamazzoni78@gmail.com
 
-##Try @serieabot
+## Try @serieabot
 If you want to play with my bot just add `@serieabot` to your telegram contacts
 and fire some commands. 
 
@@ -18,7 +18,7 @@ This is a list of available commands:
 - `player`: player details
 - `help`: details about commands
 
-##Run your own bot
+## Run your own bot
 In order to run the bot you have to provide:
 
 - A Docker instance (https://docs.docker.com/install/)
