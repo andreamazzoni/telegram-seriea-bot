@@ -3,3 +3,5 @@ env/
 *.sublime-workspace
 
 __pycache__/
+
+_build/
