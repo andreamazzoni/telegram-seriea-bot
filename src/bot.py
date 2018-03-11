@@ -7,14 +7,18 @@ from threading import Thread
 from footballdata import FootballData
 
 bot_token = os.environ['BOT_TOKEN']
+football_data_token = os.environ['FOOTBALL_DATA_TOKEN']
+football_data_hostname = os.environ['FOOTBALL_DATA_HOSTNAME']
+football_data_protocol = os.environ['FOOTBALL_DATA_PROTOCOL']
+log_level = os.environ['LOG_LEVEL']
 
 logging.basicConfig(format='%(asctime)s - %(name)s - '
                            '%(levelname)s - %(message)s',
-                    level=os.environ['LOG_LEVEL'])
+                    level=log_level)
 
 logger = logging.getLogger(__name__)
 
-fd = FootballData(os.environ['PROTOCOL'] + '://' + os.environ['FOOTBALL_DATA_HOSTNAME'])
+fd = FootballData(football_data_protocol + '://' + football_data_hostname, football_data_token)
 
 
 def representint(s):

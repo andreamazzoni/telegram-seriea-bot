@@ -8,7 +8,6 @@ telegram-seriea-bot
 
 A Telegram bot that provides data and statistics about Serie A, the italian soccer league.
 
-
 Data by https://api.football-data.org
 
 Powered by https://github.com/python-telegram-bot/python-telegram-bot

@@ -5,14 +5,12 @@ from team import Team
 
 class FootballData:
 
-    competition = 'competitions/456'
-    token = 'bfd9185cc48048a9b4bbb8f6ac67e905'
-    headers = {'X-Auth-Token': token}
-
-    def __init__(self, hostname):
+    def __init__(self, hostname, token):
         self.cache = Cache(3600)
         self.team = Team()
         self.base_url = hostname + '/v1/'
+        self.headers = {'X-Auth-Token': token}
+        self.competition = 'competitions/456'
 
     def get_data(self, resource):
         return self.cache.get_content(self.base_url + resource, self.headers)

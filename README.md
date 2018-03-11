@@ -23,12 +23,13 @@ In order to run the bot you have to provide:
 
 - A Docker instance (https://docs.docker.com/install/)
 - A Telegram bot token (https://core.telegram.org/bots#3-how-do-i-create-a-bot)
+- A football-data token (https://api.football-data.org/client/register)
 
 Then you have to build and run your container:
 ```bash
-$ make docker-run TOKEN="<your token>"
+$ make docker-run BOT_TOKEN="<your bot token>" FOOTBALL_DATA_TOKEN="<your api token>"
 ```
 Or if you want to run your bot in background mode:
 ```bash
-$ make docker-deploy TOKEN="<your token>"
+$ make docker-deploy BOT_TOKEN="<your bot token>" FOOTBALL_DATA_TOKEN="<your api token>"
 ```
