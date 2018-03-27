@@ -84,7 +84,7 @@ class FootballData:
             if fixtures[i]['status'] in ('TIMED', 'SCHEDULED'):
                 date = datetime.datetime.strptime(
                     fixtures[i]['date'], '%Y-%m-%dT%H:%M:%SZ')
-                date += datetime.timedelta(hours=1)
+                date += datetime.timedelta(hours=2)
                 stringdate = date.strftime(
                     '%a') + ' ' + date.strftime('%H:%M') + ' '
                 ret += stringdate + '`\n'
