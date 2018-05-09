@@ -7,7 +7,6 @@ class FootballData:
 
     def __init__(self, hostname, token):
         self.cache = Cache(3600)
-        self.team = Team()
         self.base_url = hostname + '/v1/'
         self.headers = {'X-Auth-Token': token}
         self.competition = 'competitions/456'
@@ -19,10 +18,10 @@ class FootballData:
         return self.cache.get_content(resource, self.headers)
 
     def get_teamname(self, teamname):
-        return self.team.get_name(teamname)
+        return Team.get_name(teamname)
 
     def get_longteamname(self, teamname):
-        return self.team.get_longname(teamname)
+        return Team.get_longname(teamname)
 
     def get_matchday(self):
         resp = self.get_data(self.competition)

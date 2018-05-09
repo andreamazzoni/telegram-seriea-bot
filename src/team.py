@@ -104,11 +104,14 @@ class Team:
                  'SPAL Ferrara': 'SPAL',
                  'Benevento Calcio': 'Benevento'}
 
-    def get_name(self, teamname):
-        return self.short_name[teamname].upper()
+    @staticmethod
+    def get_name(teamname):
+        return Team.short_name[teamname].upper()
 
-    def get_longname(self, teamname):
-        return self.long_name[teamname]
+    @staticmethod
+    def get_longname(teamname):
+        return Team.long_name[teamname]
 
-    def get_photourl(self, teamname):
-        return self.photo[teamname]
+    @staticmethod
+    def get_photourl(teamname):
+        return Team.photo[teamname]
