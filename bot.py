@@ -1,21 +1,16 @@
 import logging
-import os
-import sys
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler
-from telegram import InlineQueryResultArticle, InputTextMessageContent
-from threading import Thread
+import config
+from telegram.ext import Dispatcher, CommandHandler, MessageHandler, Filters, InlineQueryHandler
+from telegram import Update, Bot, InputTextMessageContent, InlineQueryResultArticle
 from footballdata import FootballData
 
-bot_token = os.environ['BOT_TOKEN']
-football_data_token = os.environ['FOOTBALL_DATA_TOKEN']
-football_data_hostname = os.environ['FOOTBALL_DATA_HOSTNAME']
-football_data_protocol = os.environ['FOOTBALL_DATA_PROTOCOL']
-log_level = os.environ['LOG_LEVEL']
+bot_token = config.bot_token
+football_data_token = config.fd_token
+football_data_hostname = config.fd_hostname
+football_data_protocol = config.fd_protocol
+log_level = config.loglevel
 
-logging.basicConfig(format='%(asctime)s - %(name)s - '
-                           '%(levelname)s - %(message)s',
-                    level=log_level)
-
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=log_level)
 logger = logging.getLogger(__name__)
 
 fd = FootballData(football_data_protocol + '://' + football_data_hostname, football_data_token)
@@ -50,8 +45,7 @@ def ranking(bot, update, args):
         ret = 'Matchday out of range'
     else:
         ret = fd.ranking(args[0])
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
 
 
 def players(bot, update, args):
@@ -61,8 +55,7 @@ def players(bot, update, args):
         ret = fd.players(args[0])
     else:
         ret = 'Too much arguments'
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
 
 
 def player(bot, update, args):
@@ -72,8 +65,7 @@ def player(bot, update, args):
         ret = fd.player(args[0], args[1])
     else:
         ret = 'Too much arguments'
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
 
 
 def matchday(bot, update, args):
@@ -87,8 +79,7 @@ def matchday(bot, update, args):
         ret = 'Argument must be at least 1'
     else:
         ret = fd.matchday(args[0])
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
 
 
 def leader(bot, update):
@@ -99,21 +90,18 @@ def leader(bot, update):
 def pic(bot, update, args):
     if len(args) != 1:
         ret = 'Syntax: /team <team name>'
-        bot.send_message(chat_id=update.message.chat_id,
-                         parse_mode='Markdown', text=ret)
+        bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
     else:
         ret = fd.pic(args[0])
         if ret == 'Wrong team name':
-            bot.send_message(chat_id=update.message.chat_id,
-                             parse_mode='Markdown', text=ret)
+            bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
         else:
             bot.send_photo(chat_id=update.message.chat_id, photo=ret)
 
 
 def help(bot, update):
     ret = open('help.txt', 'r').read()
-    bot.send_message(chat_id=update.message.chat_id,
-                     parse_mode='Markdown', text=ret)
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
 
 
 def info(bot, update):
@@ -146,23 +134,10 @@ def inline(bot, update):
     bot.answer_inline_query(update.inline_query.id, query_results)
 
 
-def main():
+def run(message):
 
-    def stop_and_restart():
-        # Gracefully stop the Updater and replace the current
-        # process with a new one
-        updater.stop()
-        os.execl(sys.executable, sys.executable, *sys.argv)
-
-    def restart(bot, update):
-        update.message.reply_text('Bot is restarting...')
-        Thread(target=stop_and_restart).start()
-
-    # Create the EventHandler and pass it your bot's token.
-    updater = Updater(token=bot_token)
-
-    # Get the dispatcher to register handlers
-    dp = updater.dispatcher
+    bot = Bot(config.bot_token)
+    dp = Dispatcher(bot, None, workers=0)
 
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("ranking", ranking, pass_args=True))
@@ -172,10 +147,6 @@ def main():
     dp.add_handler(CommandHandler("leader", leader))
     dp.add_handler(CommandHandler("pic", pic, pass_args=True))
     dp.add_handler(CommandHandler("help", help))
-
-    # handler for admin only
-    dp.add_handler(CommandHandler('restart', restart,
-                                  filters=Filters.user(username='@andmazz')))
     dp.add_handler(CommandHandler('info', info, filters=Filters.user(username='@andmazz')))
 
     # on noncommand i.e message - echo the message on Telegram
@@ -188,25 +159,6 @@ def main():
     inline_handler = InlineQueryHandler(inline)
     dp.add_handler(inline_handler)
 
-    # Start the Bot
-
-    # for developing
-    updater.start_polling()
-
-    # for production
-    # updater.start_webhook(listen='0.0.0.0',
-    #                       port=8443,
-    #                       url_path=bot_token,
-    #                       key='key.pem',
-    #                       cert='cert.pem',
-    #                       webhook_url='https://64.137.249.79:8443/'
-    #                       + bot_token)
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
-
-
-if __name__ == '__main__':
-    main()
+    # decode update and try to process it
+    update = Update.de_json(message, bot)
+    dp.process_update(update)
