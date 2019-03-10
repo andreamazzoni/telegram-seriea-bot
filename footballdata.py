@@ -1,4 +1,5 @@
-import datetime
+from datetime import datetime
+from dateutil import tz
 from cache import Cache
 from team import Team
 
@@ -7,9 +8,9 @@ class FootballData:
 
     def __init__(self, hostname, token):
         self.cache = Cache(3600)
-        self.base_url = hostname + '/v1/'
+        self.base_url = hostname + '/v2/'
         self.headers = {'X-Auth-Token': token}
-        self.competition = 'competitions/456'
+        self.competition = 'competitions/SA'
 
     def get_data(self, resource):
         return self.cache.get_content(self.base_url + resource, self.headers)
@@ -25,22 +26,24 @@ class FootballData:
 
     def get_matchday(self):
         resp = self.get_data(self.competition)
-        return resp.json()['currentMatchday']
+        return resp.json()['currentSeason']['currentMatchday']
 
     def ranking(self, matchday):
         if matchday == 0:
             matchday = self.get_matchday()
 
         resp = self.get_data(
-            self.competition + '/leagueTable?matchday=' + str(matchday))
-        ranking = resp.json()['standing']
+            self.competition + '/standings?matchday=' + str(matchday))
+        ranking = resp.json()['standings'][0]['table']
+
         ret = '*Ranking (Matchday ' + str(matchday) + ')*\n'
         ret += '`'
+
         for i in range(0, 20):
             ret += str(i + 1).ljust(2) + ' ' + \
-                self.get_teamname(ranking[i]['teamName']).ljust(4)
+                self.get_teamname(ranking[i]['team']['name']).ljust(4)
             ret += ' ' + str(ranking[i]['points'])
-            ret += ' [' + str(ranking[i]['goals']) + '|' + \
+            ret += ' [' + str(ranking[i]['goalsFor']) + '|' + \
                 str(ranking[i]['goalsAgainst']) + '|'
             ret += str(ranking[i]['goalDifference']) + ']' + '\n'
         ret += '`'
@@ -53,45 +56,54 @@ class FootballData:
             matchday = matchday
 
         resp = self.get_data(self.competition +
-                             '/fixtures?matchday=' + str(matchday))
-        fixtures = resp.json()['fixtures']
-        count = resp.json()['count']
+                             '/matches?matchday=' + str(matchday))
+        matches = resp.json()['matches']
 
-        if count == 0:
-            return 'Matchday out of range'
-
-        date = datetime.datetime.strptime(
-            fixtures[0]['date'], '%Y-%m-%dT%H:%M:%SZ')
+        date = datetime.strptime(
+            matches[0]['utcDate'], '%Y-%m-%dT%H:%M:%SZ')
         ret = '*Matchday ' + \
-            str(fixtures[0]['matchday']) + ':* _' + \
+            str(matches[0]['matchday']) + ':* _' + \
             date.strftime('%d/%m/%Y') + '_\n'
-        for i in range(0, count):
 
-            hometeam = self.get_teamname(fixtures[i]['homeTeamName'])
-            awayteam = self.get_teamname(fixtures[i]['awayTeamName'])
+        for match in matches:
+
+            hometeam = self.get_teamname(match['homeTeam']['name'])
+            awayteam = self.get_teamname(match['awayTeam']['name'])
 
             ret += '`' + hometeam + ' - ' + awayteam + ' '
 
-            if fixtures[i]['status'] in ('FINISHED'):
-                ret += str(fixtures[i]['result']['goalsHomeTeam']) + '-' + \
-                    str(fixtures[i]['result']['goalsAwayTeam']) + '`\n'
+            score_home = str(match['score']['fullTime']['homeTeam'])
+            if score_home == 'None':
+                score_home = str(0)
 
-            if fixtures[i]['status'] in ('IN_PLAY'):
-                ret += str(fixtures[i]['result']['goalsHomeTeam']) + '-' + \
-                       str(fixtures[i]['result']['goalsAwayTeam']) + '`  Live!\n'
+            score_away = str(match['score']['fullTime']['awayTeam'])
+            if score_away == 'None':
+                score_away = str(0)
 
-            if fixtures[i]['status'] in ('TIMED', 'SCHEDULED'):
-                date = datetime.datetime.strptime(
-                    fixtures[i]['date'], '%Y-%m-%dT%H:%M:%SZ')
-                date += datetime.timedelta(hours=2)
-                stringdate = date.strftime(
-                    '%a') + ' ' + date.strftime('%H:%M') + ' '
-                ret += stringdate + '`\n'
+            ret += score_home + '-' + score_away
 
-            if fixtures[i]['status'] in ('POSTPONED'):
+            if match['status'] in ('FINISHED'):
+                ret += '`\n'
+
+            if match['status'] in ('IN_PLAY', 'PAUSED'):
+                ret += '`  Live!\n'
+
+            if match['status'] in ('TIMED', 'SCHEDULED'):
+                utc = datetime.strptime(match['utcDate'], '%Y-%m-%dT%H:%M:%SZ')
+                from_zone = tz.gettz('UTC')
+                to_zone = tz.gettz('Europe/Rome')
+                utc = utc.replace(tzinfo=from_zone)
+                date = utc.astimezone(to_zone)
+
+                # date = datetime.datetime.strptime(match['utcDate'], '%Y-%m-%dT%H:%M:%SZ')
+                # date += datetime.timedelta(hours=2)
+                stringdate = date.strftime('%a') + ' ' + date.strftime('%H:%M') + ' '
+                ret += ' ' + stringdate + '`\n'
+
+            if match['status'] in ('POSTPONED'):
                 ret += ' Postponed`\n'
 
-            if fixtures[i]['status'] in ('CANCELED'):
+            if match['status'] in ('CANCELED'):
                 ret += ' Canceled`\n'
 
         return ret
@@ -104,15 +116,14 @@ class FootballData:
         for i in range(0, count):
             teamname = self.get_longteamname(teams[i]['name'])
             if teamname.lower() == teamName.lower():
-                players_url = teams[i]['_links']['players']['href']
+                team_id = teams[i]['id']
                 ret = '*' + teamname + ' players:* \n'
         if ret != '':
-            resp = self.get_data_from_url(players_url)
-            count = resp.json()['count']
-            players = resp.json()['players']
-            for j in range(0, count):
-                player_name = players[j]['name']
-                player_number = str(players[j]['jerseyNumber'])
+            resp = self.get_data('/teams/' + str(team_id))
+            players = resp.json()['squad']
+            for player in players:
+                player_name = player['name']
+                player_number = str(player['shirtNumber'])
                 if player_number == 'None':
                     player_number = '-'
                 ret += '`' + player_number.ljust(2) + ' ' + player_name + '`\n'
@@ -122,37 +133,33 @@ class FootballData:
 
     def player(self, teamName, playerNumber):
         resp = self.get_data(self.competition + '/teams')
-        count = resp.json()['count']
         teams = resp.json()['teams']
 
-        players_url = ''
-        for i in range(0, count):
-            teamname = self.get_longteamname(teams[i]['name'])
+        team_id = None
+        for team in teams:
+            teamname = self.get_longteamname(team['name'])
             if teamname.lower() == teamName.lower():
-                players_url = teams[i]['_links']['players']['href']
+                team_id = team['id']
 
-        if players_url != '':
-            resp = self.get_data_from_url(players_url)
-            count = resp.json()['count']
-            players = resp.json()['players']
+        if team_id is None:
+            return 'Wrong team name'
 
-            ret = ''
-            for j in range(0, count):
-                if str(players[j]['jerseyNumber']) == playerNumber:
-                    ret = '*' + players[j]['name'] + '*\n'
-                    ret += '`Position: ' + players[j]['position'] + '`\n'
-                    ret += '`Number: ' + \
-                        str(players[j]['jerseyNumber']) + '`\n'
-                    ret += '`Birth date: ' + players[j]['dateOfBirth'] + '`\n'
-                    ret += '`Nationality: ' + players[j]['nationality'] + '`\n'
-                    ret += '`Contract until: ' + \
-                        players[j]['contractUntil'] + '`\n'
+        resp = self.get_data('/teams/' + str(team_id))
+        players = resp.json()['squad']
 
-            if ret == '':
-                ret = 'Wrong player number'
+        ret = ''
+        for player in players:
+            shirtNumber = player['shirtNumber']
+            if str(shirtNumber) == str(playerNumber):
+                ret = '*' + player['name'] + '*\n'
+                ret += '`Position: ' + player['position'] + '`\n'
+                ret += '`Number: ' + str(shirtNumber) + '`\n'
+                ret += '`Birth date: ' + player['dateOfBirth'] + '`\n'
+                ret += '`Nationality: ' + player['nationality'] + '`\n'
 
-        else:
-            ret = 'Wrong team name'
+        if ret == '':
+            ret = 'Wrong player number'
+
         return ret
 
     # Not exposed commands
