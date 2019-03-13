@@ -12,6 +12,13 @@ class FootballData:
         self.headers = {'X-Auth-Token': token}
         self.competition = 'competitions/SA'
 
+    def load_tla(self):
+        resp = self.get_data(self.competition + "/teams")
+        teams = resp.json()['teams']
+        self.tla = dict()
+        for team in teams:
+            self.tla[team['name']] = team['tla']
+
     def get_data(self, resource):
         return self.cache.get_content(self.base_url + resource, self.headers)
 
@@ -49,11 +56,8 @@ class FootballData:
         ret += '`'
         return ret
 
-    def matchday(self, matchday):
-        if matchday == 0:
-            matchday = self.get_matchday()
-        else:
-            matchday = matchday
+    def matchday(self):
+        matchday = self.get_matchday()
 
         resp = self.get_data(self.competition +
                              '/matches?matchday=' + str(matchday))
@@ -65,10 +69,12 @@ class FootballData:
             str(matches[0]['matchday']) + ':* _' + \
             date.strftime('%d/%m/%Y') + '_\n'
 
+        self.load_tla()
+
         for match in matches:
 
-            hometeam = self.get_teamname(match['homeTeam']['name'])
-            awayteam = self.get_teamname(match['awayTeam']['name'])
+            hometeam = self.tla[match['homeTeam']['name']]
+            awayteam = self.tla[match['awayTeam']['name']]
 
             ret += '`' + hometeam + ' - ' + awayteam + ' '
 
@@ -107,6 +113,14 @@ class FootballData:
                 ret += ' Canceled`\n'
 
         return ret
+
+    def matchday_cl(self):
+        self.competition = 'competitions/CL'
+        return self.matchday()
+
+    def matchday_sa(self):
+        self.competition = 'competitions/SA'
+        return self.matchday()
 
     def players(self, teamName):
         resp = self.get_data(self.competition + '/teams')

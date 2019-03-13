@@ -112,12 +112,21 @@ class Team:
 
     @staticmethod
     def get_name(teamname):
-        return Team.short_name[teamname].upper()
+        if teamname in Team.short_name:
+            return Team.short_name[teamname].upper()
+        else:
+            return teamname
 
     @staticmethod
     def get_longname(teamname):
-        return Team.long_name[teamname]
+        if teamname in Team.long_name:
+            return Team.long_name[teamname]
+        else:
+            return teamname
 
     @staticmethod
     def get_photourl(teamname):
-        return Team.photo[teamname]
+        if teamname in Team.photo:
+            return Team.photo[teamname]
+        else:
+            return teamname

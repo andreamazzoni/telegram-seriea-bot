@@ -70,33 +70,12 @@ def player(bot, update, args):
 
 def matchday(bot, update, args):
     if len(args) == 0:
-        ret = fd.matchday(0)
-    elif len(args) > 1:
-        ret = 'Too much arguments'
-    elif not representint(args[0]):
-        ret = 'Argument must be an integer'
-    elif int(args[0]) < 1:
-        ret = 'Argument must be at least 1'
+        ret = fd.matchday_sa()
+    elif args[0].lower() == 'cl':
+        ret = fd.matchday_cl()
     else:
-        ret = fd.matchday(args[0])
+        ret = "Wrong argument"
     bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
-
-
-def leader(bot, update):
-    ret = fd.leader()
-    bot.send_photo(chat_id=update.message.chat_id, photo=ret)
-
-
-def pic(bot, update, args):
-    if len(args) != 1:
-        ret = 'Syntax: /team <team name>'
-        bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
-    else:
-        ret = fd.pic(args[0])
-        if ret == 'Wrong team name':
-            bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
-        else:
-            bot.send_photo(chat_id=update.message.chat_id, photo=ret)
 
 
 def help(bot, update):
@@ -144,8 +123,6 @@ def run(message):
     dp.add_handler(CommandHandler("players", players, pass_args=True))
     dp.add_handler(CommandHandler("player", player, pass_args=True))
     dp.add_handler(CommandHandler("matchday", matchday, pass_args=True))
-    dp.add_handler(CommandHandler("leader", leader))
-    dp.add_handler(CommandHandler("pic", pic, pass_args=True))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler('info', info, filters=Filters.user(username='@andmazz')))
 
