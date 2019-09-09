@@ -46,9 +46,11 @@ class FootballData:
         ret = '*Ranking (Matchday ' + str(matchday) + ')*\n'
         ret += '`'
 
+        self.load_tla()
+
         for i in range(0, 20):
             ret += str(i + 1).ljust(2) + ' ' + \
-                self.get_teamname(ranking[i]['team']['name']).ljust(4)
+                self.tla[ranking[i]['team']['name']]
             ret += ' ' + str(ranking[i]['points'])
             ret += ' [' + str(ranking[i]['goalsFor']) + '|' + \
                 str(ranking[i]['goalsAgainst']) + '|'
