@@ -178,6 +178,17 @@ class FootballData:
 
         return ret
 
+    def get_scorers(self):
+        resp = self.get_data(self.competition + '/scorers')
+        scorers = resp.json()['scorers']
+
+        ret = ''
+        for player in scorers:
+            goals = str(player['numberOfGoals']).rjust(2)
+            ret += '`' + goals + ' ' + player['player']['name'] + '`\n'
+
+        return ret
+
     # Not exposed commands
     def leader(self):
         resp = self.get_data(self.competition + '/leagueTable')

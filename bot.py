@@ -88,6 +88,11 @@ def info(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text=ret)
 
 
+def scorers(bot, update):
+    ret = fd.get_scorers()
+    bot.send_message(chat_id=update.message.chat_id, parse_mode='Markdown', text=ret)
+
+
 def inline(bot, update):
     query_results = list()
     query_results.append(
@@ -123,6 +128,7 @@ def run(message):
     dp.add_handler(CommandHandler("players", players, pass_args=True))
     dp.add_handler(CommandHandler("player", player, pass_args=True))
     dp.add_handler(CommandHandler("matchday", matchday, pass_args=True))
+    dp.add_handler(CommandHandler("scorers", scorers))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler('info', info, filters=Filters.user(username='@andmazz')))
 
