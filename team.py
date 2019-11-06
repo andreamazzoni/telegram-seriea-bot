@@ -73,15 +73,18 @@ class Team:
                   'UC Sampdoria': 'Sam',
                   'Atalanta BC': 'Ata',
                   'AC Milan': 'Mil',
-                  'Juventus Turin': 'Juv',
+                  'Juventus FC': 'Juv',
                   'Udinese Calcio': 'Udi',
                   'Genoa CFC': 'Gen',
                   'Hellas Verona FC': 'Ver',
-                  'Bologna FC': 'Bol',
+                  'Bologna FC 1909': 'Bol',
                   'Cagliari Calcio': 'Cag',
                   'FC Crotone': 'Cro',
-                  'SPAL Ferrara': 'SPA',
-                  'Benevento Calcio': 'Ben'}
+                  'SPAL 2013': 'SPA',
+                  'Benevento Calcio': 'Ben',
+                  'Frosinone Calcio': 'Fro',
+                  'Empoli FC': 'Emp',
+                  'Parma Calcio 1913': 'Par'}
 
     long_name = {'ACF Fiorentina': 'Fiorentina',
                  'FC Internazionale Milano': 'Inter',
@@ -94,24 +97,36 @@ class Team:
                  'UC Sampdoria': 'Sampdoria',
                  'Atalanta BC': 'Atalanta',
                  'AC Milan': 'Milan',
-                 'Juventus Turin': 'Juventus',
+                 'Juventus FC': 'Juventus',
                  'Udinese Calcio': 'Udinese',
                  'Genoa CFC': 'Genoa',
                  'Hellas Verona FC': 'Verona',
-                 'Bologna FC': 'Bologna',
+                 'Bologna FC 1909': 'Bologna',
                  'Cagliari Calcio': 'Cagliari',
                  'FC Crotone': 'Crotone',
-                 'SPAL Ferrara': 'SPAL',
-                 'Benevento Calcio': 'Benevento'}
+                 'SPAL 2013': 'SPAL',
+                 'Benevento Calcio': 'Benevento',
+                 'Frosinone Calcio': 'Frosinone',
+                 'Empoli FC': 'Empoli',
+                 'Parma Calcio 1913': 'Parma'}
 
     @staticmethod
     def get_name(teamname):
-        return Team.short_name[teamname].upper()
+        if teamname in Team.short_name:
+            return Team.short_name[teamname].upper()
+        else:
+            return teamname
 
     @staticmethod
     def get_longname(teamname):
-        return Team.long_name[teamname]
+        if teamname in Team.long_name:
+            return Team.long_name[teamname]
+        else:
+            return teamname
 
     @staticmethod
     def get_photourl(teamname):
-        return Team.photo[teamname]
+        if teamname in Team.photo:
+            return Team.photo[teamname]
+        else:
+            return teamname

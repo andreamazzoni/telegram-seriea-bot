@@ -1,0 +1,19 @@
+{
+    "dev": {
+        "app_function": "bot_server.app",
+        "aws_region": "eu-central-1",
+        "profile_name": "default",
+        "project_name": "telegram-seriea",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-telegram-seriea-bot",
+        "keep_warm": false
+    },
+    "prod": {
+        "app_function": "bot_server.app",
+        "aws_region": "eu-central-1",
+        "profile_name": "default",
+        "project_name": "telegram-seriea",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-telegram-seriea-bot"
+    }
+}

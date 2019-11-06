@@ -11,3 +11,5 @@ show information about specified matchday
 show all team players
 /player <team name> <player number>
 show player's details
+/scorers
+show actual scorers ranking
