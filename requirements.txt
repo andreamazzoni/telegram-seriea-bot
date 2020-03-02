@@ -1,4 +1,3 @@
-Flask
+flask
 python-telegram-bot
-future==0.16.0
 zappa
